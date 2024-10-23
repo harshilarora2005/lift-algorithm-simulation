@@ -1,0 +1,68 @@
+:root{
+    --primary-color:black;
+    --secondary-color:#3D52A0;
+    --background-color:#EDE8F5;
+    --tertiary-color:#7091E6;
+    --quarternary-color:#8697C4;
+    --important-color:red;
+    --quinary-color:#ADBBDA;
+}
+*{
+    font-family: 'Josefin Sans',sans-serif;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+body{
+    background-color: var(--background-color);
+
+}
+header{
+    text-align: center;
+    padding: 2rem 0 2rem 0;
+}
+#input-box{
+    height: 70vh;
+    padding-left: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#inner-input-box{
+    display: flex;
+    flex-direction: column;
+}
+#input-boxes{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+}
+#user-input input[type=number]{
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 10px;
+    height: 2rem;
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    color:var(--primary-color)
+}
+#submit{
+    font-size: 1.2rem;
+    padding: 0.8rem;
+    border-radius: 12px;
+    margin-left:0.5rem ;
+    background-color: var(--tertiary-color);
+    cursor: pointer;
+}
+#submit:hover{
+    transform: translateY(-7px);
+    background-color: var(--quarternary-color);
+}
+.emphasis{
+    color:var(--important-color);
+}
+input:focus{
+    background-color:var(--quarternary-color);
+}
