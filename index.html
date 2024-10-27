@@ -7,38 +7,62 @@
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/9433e2092d.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
         <h1>Welcome to Lift Simulation</h1>
+        <div id="header-info">
+            <section id="option">
+                <input type="button" class="selectedbtn" onclick="toggle(1)" value="Scan or Look">
+                <input type="button" onclick="toggle(2)" value="Destination Control">
+                <input type="button" onclick="toggle(3)" value="Shortest Seek Time First">
+                <input type="button" onclick="toggle(4)" value="Collective Control">
+            </section>
+            <section id="input-count">
+                <h2 id="floors-count"></h2>
+                <h2 id="lifts-count"></h2>
+            </section>
+        </div>
     </header>
     <main>
-        <div id="input-box">
-            <div id="inner-input-box">
-                <h2>Enter input parameters:-</h2>
-                <form id="user-input" action="">
-                    <div id="input-boxes">
-                        <div>
-                            <input type="number" min="10" max="100" name="floors-input" id="floors-input" placeholder="Floors:" required>
-                            <input type="number" min="1" max="10" name="elevator-input" id="elevator-input" placeholder="Elevators:" required>
+        <div id="landing">
+            <div id="input-box">
+                <div id="glass">
+                    <div id="inner-input-box">
+                        <h2>Enter input parameters:-</h2>
+                        <form id="user-input" onsubmit="startSimulation(event)">
+                            <div id="input-boxes">
+                                <div>
+                                    <input type="number" min="10" max="100" name="floors-input" id="floors-input" placeholder="Floors:" required>
+                                    <input type="number" min="1" max="10" name="elevator-input" id="elevator-input" placeholder="Elevators:" required>
 
-                        </div>
-                        <button id="submit" type="submit">Start Simulation</button>
+                                </div>
+                                <button id="submit" type="submit" >Start Simulation</button>
+                            </div>
+                        </form>
+                        <h3>
+                            <span class="emphasis">NOTE:</span>
+                            <span>Floor can be varied from 10-100</span>
+                        </h3>
+                        <h3>
+                            <span class="emphasis">NOTE:</span>
+                            <span>Elevators can be varied from 1-10</span>
+                        </h3>
                     </div>
-                </form>
-                <h3>
-                    <span class="emphasis">NOTE:</span>
-                    <span>Floor can be varied from 10-100</span>
-                </h3>
-                <h3>
-                    <span class="emphasis">NOTE:</span>
-                    <span>Elevators can be varied from 1-10</span>
-                </h3>
+                </div>
             </div>
         </div>
+        <div id="simulation-area">
+            <section id="floors-container">
+                <!-- floors will come here and lifts will be at 0th floor initially -->
+    
+            </section>
+        </div>
     </main>
-    <script ></script>
+    <script src="main.js"></script>
     
 </body>
 </html>
