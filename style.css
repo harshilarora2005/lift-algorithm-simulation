@@ -9,6 +9,10 @@
     --lift-color:#3DED97;
 
 }
+html {
+    scroll-behavior: smooth;
+}
+
 *{
     font-family: 'Josefin Sans',sans-serif;
     box-sizing: border-box;
@@ -19,11 +23,37 @@ body{
     background-color: var(--background-color);
 
 }
-/* #landing{
-    background: url(image4.jpeg) no-repeat center;
+
+h1 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    animation: fadeInSlideDown 1s ease-out;
+    text-shadow: 0px 0px 5px var(--secondary-color);
+    animation: shadowPulse 3s infinite;
+}
+@keyframes shadowPulse {
+    0%, 100% {
+        text-shadow: 0px 0px 5px var(--secondary-color);
+    }
+    50% {
+        text-shadow: 0px 0px 15px var(--tertiary-color);
+    }
+}
+@keyframes fadeInSlideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+#landing{
+    background: url(image5.webp) no-repeat center;
     background-size: 100% 100%;
     height: 90vh;
-} */
+}
 
 #header-info{
     display: flex;
@@ -38,8 +68,6 @@ body{
 #option input{
     cursor: pointer;
     font-size: 1.2rem;
-    /* border: none; */
-    /* background-color: transparent; */
     padding: 3px;
 }
 .selectedbtn{
@@ -81,10 +109,9 @@ header{
 #glass{
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
     backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     border-radius: 20px;
     border:1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.1);
     padding: 70px;
 }
 #input-boxes{
@@ -94,7 +121,6 @@ header{
     justify-content: center;
     align-items: center;
     width: 100%;
-    /* width: fit-content; */
 }
 #input-boxes div{
     width: 100%;
@@ -110,18 +136,35 @@ header{
     margin-bottom: 0.5rem;
     color:var(--primary-color)
 }
+#user-input input[type=number]:focus {
+    outline: none;
+    border: 2px solid var(--secondary-color);
+    background-color: rgba(61, 82, 160, 0.1); 
+}
+
 #submit{
     font-size: 1.2rem;
     padding: 0.8rem;
     border-radius: 12px;
     margin-left:0.5rem ;
-    background-color: var(--tertiary-color);
+    background: linear-gradient(45deg, #7091E6, #3D52A0, #7091E6);
+    background-size: 200% 200%;
+    transition: transform 0.5s;
     cursor: pointer;
     margin-bottom: 0.8rem;
 }
+#submit:active {
+    transform: scale(0.98);
+    transition: transform 0.1s;
+}
+
 #submit:hover{
-    transform: translateY(-7px);
-    background-color: var(--quarternary-color);
+    transform: translateY(-3px);
+    animation: gradientMove 2s alternate infinite;
+}
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
 }
 .emphasis{
     color:var(--important-color);
