@@ -37,7 +37,7 @@
                             <div id="input-boxes">
                                 <div>
                                     <input type="number" min="10" max="100" name="floors-input" id="floors-input" placeholder="Floors:" required>
-                                    <input type="number" min="1" max="10" name="elevator-input" id="elevator-input" placeholder="Elevators:" required>
+                                    <input type="number" min="1" max="5" name="elevator-input" id="elevator-input" placeholder="Elevators:" required>
 
                                 </div>
                                 <button id="submit" type="submit" >Start Simulation</button>
@@ -56,9 +56,15 @@
             </div>
         </div>
         <div id="simulation-area">
+            <div id="destination-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Select Your Destination Floor</h2>
+                    <select id="floor-select"></select>
+                    <button id="submit-destination">Confirm</button>
+                </div>
+            </div>
             <section id="floors-container">
-                <!-- floors will come here and lifts will be at 0th floor initially -->
-    
             </section>
         </div>
     </main>

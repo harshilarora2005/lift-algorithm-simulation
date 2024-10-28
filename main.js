@@ -1,9 +1,11 @@
-
+const floorheight=110;
 const floormap=new Map();
 const liftavailable=new Map();
 const liftlocation=new Map();
+const liftQueues=new Map();
 let liftscount,floorscount;
 let algorithm="Scan or Look";
+
 function toggle(x){
     const element=document.querySelector(`#option input:nth-of-type(${x})`);
     algorithm=element.value;
@@ -23,8 +25,8 @@ function startSimulation(event){
     }
     floorscount=floors;
     liftscount=elevators;
-    const inputBox = document.querySelector("#input-box");
-    inputBox.style.display = "none";
+    const landing = document.querySelector("#landing");
+    landing.style.display = "none";
     const floorsCountContainer = document.querySelector("#floors-count");
     const liftsCountContainer = document.querySelector("#lifts-count");
     floorsCountContainer.textContent = `Floors count - ${floors}`;
@@ -87,4 +89,58 @@ function addlifts(totalLifts){
         liftlocation.set(`lift-${i}`,0);
         groundFloor.appendChild(currlift);
     }   
+}
+function liftcall(event) {
+    const currentFloor = parseInt(event.target.closest('.floor').id.split('-')[1]);
+    destinationPanel(currentFloor);
+}
+
+function destinationPanel(currentFloor) {
+    const modal = document.getElementById("destination-modal");
+    const floorSelect = document.getElementById("floor-select");
+    floorSelect.innerHTML = "";
+    for (let i = floorscount; i >= 0; i--) {
+        if (i !== currentFloor) { 
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = `Floor ${i}`;
+            floorSelect.appendChild(option);
+        }
+    }
+    modal.dataset.callFloor = floorSelect;
+    modal.style.display = "block";
+}
+document.querySelector(".close").onclick = function() {
+    document.getElementById("destination-modal").style.display = "none";
+};
+document.getElementById("submit-destination").onclick = function() {
+    const callFloor = parseInt(document.getElementById("destination-modal").dataset.callFloor);
+    const destinationFloor = parseInt(document.getElementById("floor-select").value);
+    document.getElementById("destination-modal").style.display = "none";
+    addLiftRequest(callFloor,destinationFloor);
+};
+
+function addLiftRequest(origin,destination){
+    switch(algorithm){
+        case 'Scan or Look':
+            algorithm1(origin,destination);
+        case 'Destination Control':
+            algorithm2(origin,destination);
+        case 'Shortest Seek Time First':
+            algorithm3(origin,destination);
+        case 'Collective Control':
+            algorithm4(origin,destination);
+    }
+}
+function algorithm1(origin,destination){
+    //for SCAN OR LOOK
+}
+function algorithm2(origin,destination){
+    //for DESTINATION CONTROL
+}
+function algorithm3(origin,destination){
+    //for SHORTEST SEEK TIME FIRST
+}
+function algorithm4(origin,destination){
+    //for COLLECTIVE CONTROL
 }
