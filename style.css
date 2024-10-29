@@ -21,7 +21,6 @@ html {
 }
 body{
     background-color: var(--background-color);
-
 }
 
 h1 {
@@ -282,4 +281,80 @@ i{
 #submit-destination:hover{
     transform: translateY(-3px);
     animation: gradientMove 2s alternate infinite;
+}
+#compare-btn {
+    display: inline-block;
+    width: 100%;
+    margin-top: 0.2rem;
+    margin-bottom: 1.2rem;
+    padding: 12px;
+    font-size: 16px;
+    font-family: 'Josefin Sans', sans-serif;
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    text-align: center;
+}
+#comparison-area{
+    background-color:var(--quarternary-color);
+}
+#compare-btn:hover {
+    background-color: #45a049;
+}
+#buildings-container {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    margin-top: 20px;
+}
+.building {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    border: 2px solid #555;
+    border-radius: 5px;
+    position: relative; 
+}
+
+/* Style for Floors */
+.floors {
+    height: 110px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 3vw;
+    gap:2vw;
+    border-top: 1px solid var(--primary-color);
+    border-bottom: 1px solid var(--primary-color);
+}
+.lifts {
+    position: absolute;
+    height: 100px;
+    right: 20px;
+    width: 90px;
+    bottom: 0;
+    background-color: var(--primary-color);
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+.left-doors{
+    border-right: 1px solid var(--primary-color);
+}
+.right-doors{
+    border-left: 1px solid var(--primary-color);
+}
+.doors{
+    background-color: var(--quinary-color);
+    height: 100%;
+    width: 50%;
+}
+.floors-details{
+    color:white;
 }

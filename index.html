@@ -16,14 +16,15 @@
         <h1>Welcome to Lift Simulation</h1>
         <div id="header-info">
             <section id="option">
-                <input type="button" class="selectedbtn" onclick="toggle(1)" value="Scan or Look">
-                <input type="button" onclick="toggle(2)" value="Destination Control">
+                <input type="button" class="selectedbtn" onclick="toggle(1)" value="Scan">
+                <input type="button" onclick="toggle(2)" value="Look">
                 <input type="button" onclick="toggle(3)" value="Shortest Seek Time First">
                 <input type="button" onclick="toggle(4)" value="Collective Control">
             </section>
             <section id="input-count">
                 <h2 id="floors-count"></h2>
                 <h2 id="lifts-count"></h2>
+                <h2 id="requests-count"></h2>
             </section>
         </div>
     </header>
@@ -43,6 +44,7 @@
                                 <button id="submit" type="submit" >Start Simulation</button>
                             </div>
                         </form>
+                        <button id="compare-btn" onclick="startComparison()">Compare</button>
                         <h3>
                             <span class="emphasis">NOTE:</span>
                             <span>Floor can be varied from 10-100</span>
@@ -67,6 +69,10 @@
             <section id="floors-container">
             </section>
         </div>
+        <div id="comparison-area">
+            <div id="buildings-container"></div>
+        </div>
+
     </main>
     <script src="main.js"></script>
     
