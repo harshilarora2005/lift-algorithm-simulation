@@ -189,15 +189,16 @@ function startComparison() {
         building.appendChild(lift);
         buildingsContainer.appendChild(building);
     }
+    generateRandomLiftRequest(floorsPerBuilding);
     Promise.all([
-        generateRandomLiftRequest('lifts-1', floorsPerBuilding),
-        generateRandomLiftRequest('lifts-2', floorsPerBuilding)
+        processLiftRequests('lifts-1'),
+        processLiftRequests('lifts-2')
     ]).then(() => {
         console.log("Both lift requests processed.");
     });
 }
 
-function generateRandomLiftRequest(liftid, numfloors) {
+function generateRandomLiftRequest(numfloors) {
     return new Promise((resolve) => {
         for (let i = 0; i < 5; i++) {
             const origin = Math.floor(Math.random() * (numfloors + 1)); 
@@ -215,9 +216,40 @@ function generateRandomLiftRequest(liftid, numfloors) {
             requestContainer.appendChild(requestItem);
         });
         console.log(liftQueue);
-        processLiftRequests(liftid);
         resolve();
     });
+}
+function processLiftRequests(liftId) {
+    const choice=liftId.split("-")[1];
+    if (liftQueue.length > 0) {
+        switch(choice){
+            case "1":{
+                const path = scanAlgorithm(liftId); 
+                if (path) {
+                    moveLift(liftId, path);
+                }
+                break;
+            }
+            case "2":{
+                const path = lookAlgorithm(liftId); 
+                if (path) {
+                    moveLift(liftId, path);
+                }
+                break;
+            }
+            case "3":{
+                
+                break;
+            }
+            case "4":{
+                
+                break;
+            }
+            default:
+                console.log("end");
+                break;
+        }
+    }
 }
 
 function scanAlgorithm(liftId) {
@@ -288,38 +320,6 @@ function lookAlgorithm(liftId) {
         path.push(destination);
     }
     return path;
-}
-function processLiftRequests(liftId) {
-    const choice=liftId.split("-")[1];
-    if (liftQueue.length > 0) {
-        switch(choice){
-            case "1":{
-                const path = scanAlgorithm(liftId); 
-                if (path) {
-                    moveLift(liftId, path);
-                }
-                break;
-            }
-            case "2":{
-                const path = lookAlgorithm(liftId); 
-                if (path) {
-                    moveLift(liftId, path);
-                }
-                break;
-            }
-            case "3":{
-                
-                break;
-            }
-            case "4":{
-                
-                break;
-            }
-            default:
-                console.log("end");
-                break;
-        }
-    }
 }
 
 function moveLift(liftId, destinations) {
