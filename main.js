@@ -2,7 +2,7 @@ const floorheight=110;
 const floormap=new Map();
 const liftavailable=new Map();
 const liftlocation=new Map();
-const liftQueues=new Map();
+const liftQueue = [];
 let liftscount,floorscount;
 let algorithm="Scan";
 
@@ -144,8 +144,6 @@ function algorithm3(origin,destination){
 function algorithm4(origin,destination){
     //for COLLECTIVE CONTROL
 }
-const liftCurrentLocations = new Map(); 
-const liftQueue = [];
 let floorsPerBuilding;
 function startComparison() {
     document.getElementById('landing').style.display = 'none';
@@ -160,8 +158,7 @@ function startComparison() {
         const building = document.createElement("div");
         building.classList.add("building");
         building.id = `building-${i}`;
-        liftCurrentLocations.set(`lifts-${i}`, 0);
-        // Create floors
+        liftlocation.set(`lifts-${i}`, 0);
         for (let j = floorsPerBuilding; j > 0; j--) {
             const floor = document.createElement("div");
             floor.classList.add("floors");
@@ -202,7 +199,6 @@ function startComparison() {
 
 function generateRandomLiftRequest(liftid, numfloors) {
     return new Promise((resolve) => {
-        liftQueue = []; 
         for (let i = 0; i < 5; i++) {
             const origin = Math.floor(Math.random() * (numfloors + 1)); 
             let destination;
@@ -225,7 +221,7 @@ function generateRandomLiftRequest(liftid, numfloors) {
 }
 
 function scanAlgorithm(liftId) {
-    const currentLocation = liftCurrentLocations.get(liftId);
+    const currentLocation = liftlocation.get(liftId);
     let path = [];
     const requests = liftQueue.map(request => ({
         origin: request.origin,
@@ -260,7 +256,7 @@ function scanAlgorithm(liftId) {
     return path;
 }
 function lookAlgorithm(liftId) {
-    const currentLocation = liftCurrentLocations.get(liftId);
+    const currentLocation = liftlocation.get(liftId);
     let path = [];
     const requests = liftQueue.map(request => ({
         origin: request.origin,
@@ -297,25 +293,25 @@ function processLiftRequests(liftId) {
     const choice=liftId.split("-")[1];
     if (liftQueue.length > 0) {
         switch(choice){
-            case 1:{
+            case "1":{
                 const path = scanAlgorithm(liftId); 
                 if (path) {
                     moveLift(liftId, path);
                 }
                 break;
             }
-            case 2:{
+            case "2":{
                 const path = lookAlgorithm(liftId); 
                 if (path) {
                     moveLift(liftId, path);
                 }
                 break;
             }
-            case 3:{
+            case "3":{
                 
                 break;
             }
-            case 4:{
+            case "4":{
                 
                 break;
             }
@@ -327,40 +323,40 @@ function processLiftRequests(liftId) {
 }
 
 function moveLift(liftId, destinations) {
-    const liftDiv = document.getElementById(liftId);
-    let currentFloorIndex = 0; 
-    function processNextDestination() {
-        if (currentFloorIndex < destinations.length) {
-            const destinationFloor = destinations[currentFloorIndex];
+    const lift = document.getElementById(liftId);
+    let currindex = 0; 
+    function processPull() {
+        if (currindex < destinations.length) {
+            const destinationFloor = destinations[currindex];
             const newPosition = destinationFloor * 110; 
-            liftDiv.style.transition = 'transform 5s'; 
-            liftDiv.style.transform = `translateY(-${newPosition}px)`; 
+            lift.style.transition = 'transform 5s'; 
+            lift.style.transform = `translateY(-${newPosition}px)`; 
             setTimeout(() => {
-                liftCurrentLocations.set(liftId, destinationFloor); 
+                liftlocation.set(liftId, destinationFloor); 
                 console.log(`${liftId} has arrived at floor ${destinationFloor}.`);
                 openLiftDoors(liftId);
-                currentFloorIndex++;
-                setTimeout(processNextDestination, 3000); 
+                currindex++;
+                setTimeout(processPull, 3000); 
             }, 5000); 
         } else {
             const returnFloor = 0;
             const newPosition = returnFloor * 110; 
-            liftDiv.style.transition = 'transform 2s'; 
-            liftDiv.style.transform = `translateY(-${newPosition}px)`; 
+            lift.style.transition = 'transform 2s'; 
+            lift.style.transform = `translateY(-${newPosition}px)`; 
 
             setTimeout(() => {
-                liftCurrentLocations.set(liftId, returnFloor); 
+                liftlocation.set(liftId, returnFloor); 
                 console.log(`${liftId} has returned to floor 0.`);
                 closeLiftDoors(liftId); 
             }, 2000); 
         }
     }
-    processNextDestination(); 
+    processPull(); 
 }
 function openLiftDoors(liftId) {
-    const liftDiv = document.getElementById(liftId);
-    const leftDoor = liftDiv.querySelector('.left-doors');
-    const rightDoor = liftDiv.querySelector('.right-doors');
+    const lift = document.getElementById(liftId);
+    const leftDoor = lift.querySelector('.left-doors');
+    const rightDoor = lift.querySelector('.right-doors');
     leftDoor.style.transition = 'transform 2s'; 
     rightDoor.style.transition = 'transform 2s'; 
     leftDoor.style.transform = 'translateX(-50%)'; 
@@ -371,9 +367,9 @@ function openLiftDoors(liftId) {
     }, 3000); 
 }
 function closeLiftDoors(liftId) {
-    const liftDiv = document.getElementById(liftId);
-    const leftDoor = liftDiv.querySelector('.left-doors');
-    const rightDoor = liftDiv.querySelector('.right-doors');
+    const lift = document.getElementById(liftId);
+    const leftDoor = lift.querySelector('.left-doors');
+    const rightDoor = lift.querySelector('.right-doors');
     leftDoor.style.transition = 'transform 0.5s'; 
     rightDoor.style.transition = 'transform 0.5s'; 
     leftDoor.style.transform = 'translateX(0)'; 
