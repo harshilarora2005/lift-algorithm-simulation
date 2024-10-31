@@ -19,7 +19,13 @@
                 <input type="button" class="selectedbtn" onclick="toggle(1)" value="Scan">
                 <input type="button" onclick="toggle(2)" value="Look">
                 <input type="button" onclick="toggle(3)" value="Shortest Seek Time First">
-                <input type="button" onclick="toggle(4)" value="Collective Control">
+                <input type="button" onclick="toggle(4)" value="First Come First Serve">
+            </section>
+            <section id="terrain-option">
+                <input type="button" class="selectedbtn" onclick="toggle1(1)" value="Scan">
+                <input type="button" onclick="toggle1(2)" value="Look">
+                <input type="button" onclick="toggle1(3)" value="Shortest Seek Time First">
+                <input type="button" onclick="toggle1(4)" value="First Come First Serve">
             </section>
             <section id="input-count">
                 <h2 id="floors-count"></h2>
@@ -39,7 +45,6 @@
                                 <div>
                                     <input type="number" min="10" max="100" name="floors-input" id="floors-input" placeholder="Floors:" required>
                                     <input type="number" min="1" max="5" name="elevator-input" id="elevator-input" placeholder="Elevators:" required>
-
                                 </div>
                                 <button id="submit" type="submit" >Start Simulation</button>
                             </div>
@@ -72,7 +77,6 @@
         <div id="comparison-area">
             <div id="buildings-container"></div>
         </div>
-
     </main>
     <script src="main.js"></script>
     
