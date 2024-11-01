@@ -128,6 +128,42 @@ if ($eventType === "start")
         echo "Start time not found in database for lift $liftId. Please start the simulation first.";
     }
 }
+$checkCountSql = "SELECT COUNT(TotalWaitTime) as recordCount FROM Simulations WHERE SimulationNumber = $simulationNumber";
+$countResult = mysqli_query($conn, $checkCountSql);
+$row = mysqli_fetch_assoc($countResult);
+
+if ($row['recordCount'] == 4) 
+{
+    $sql6 = "SELECT SimulationID, AlgorithmUsed, TotalWaitTime AS MinElapsedTime
+        FROM Simulations
+        WHERE SimulationNumber = $simulationNumber
+        ORDER BY TotalWaitTime ASC
+        LIMIT 1";
+
+    $result6 = mysqli_query($conn, $sql6);
+
+    if ($result6 && mysqli_num_rows($result6) > 0) 
+    {
+        $row = mysqli_fetch_assoc($result6);
+        $bestSimulationID = $row['SimulationID'];
+        $bestAlgorithm = $row['AlgorithmUsed'];
+        $bestElapsedTime = $row['MinElapsedTime'];
+        $efficiencyScore = (1 / $bestElapsedTime)*100;    
+        $sqlInsert = "INSERT INTO SimulationResults (SimulationID, EfficiencyScore, OptimalAlgorithm)
+                VALUES ($bestSimulationID, $efficiencyScore, '$bestAlgorithm')";
+
+        $result7 = mysqli_query($conn, $sqlInsert);
+        if (!$result7) 
+        {
+            echo "Error inserting into SimulationResults: " . mysqli_error($conn);
+        } 
+        else 
+        {
+            echo "Optimal algorithm '$bestAlgorithm' with SimulationID $bestSimulationID and EfficiencyScore $efficiencyScore has been recorded in SimulationResults.";
+        }
+    }   
+}
+
 
 mysqli_close($conn);
 ?>

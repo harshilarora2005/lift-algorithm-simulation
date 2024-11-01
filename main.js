@@ -688,7 +688,3 @@ function submitBuildingForm() {
     document.getElementById('terrain').value = terrain; 
     document.getElementById('building-form').submit(); 
 }
-function displayBestAlgorithm(){
-    document.getElementById("form_simulation_number").value=SimulationID;
-    document.getElementById("final_result_form").submit();
-}
