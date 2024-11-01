@@ -78,6 +78,13 @@
         </div>
         <div id="comparison-area">
             <div id="buildings-container"></div>
+            <form id="algorithm-event-form" action="SimulationData.php" method="POST" style="display: none;" target="hidden_iframe">
+                <input type="hidden" name="simulation_number" id="form_simulation_number">
+                <input type="hidden" name="terrain" id="form_terrain">
+                <input type="hidden" name="lift_id" id="form_lift_id">
+                <input type="hidden" name="event_type" id="form_event_type">
+            </form>
+            <iframe name="hidden_iframe" style="display: none;"></iframe>
         </div>
     </main>
     <script src="main.js"></script>

@@ -597,7 +597,7 @@ function sstfAlgorithm(liftId){
 function moveLift(liftId, destinations) {
     const lift = document.getElementById(liftId);
     let currindex = 0; 
-    let startTime = performance.now();
+    logAlgorithmEvent(liftId, "start");
     function processPull() {
         if (currindex < destinations.length) {
             const destinationFloor = destinations[currindex];
@@ -633,13 +633,13 @@ function moveLift(liftId, destinations) {
                 let endTime = performance.now(); 
                 let timeTaken = (endTime - startTime) / 1000; 
                 console.log(`Time taken by ${liftId}: ${timeTaken} seconds`);
-                // sendTimeToBackend(liftId, timeTaken);
-                const liftNumber = liftId.split('-')[1]; // Extract lift number
+                const liftNumber = liftId.split('-')[1]; 
                 const name = document.getElementById(`algo-name-${liftNumber}`);
                 if (name) {
                     name.classList.add('completed');
                 }
                 liftavailable.set(liftId, true);
+                logAlgorithmEvent(liftId, "end");
             }, 2000); 
         }
     }
@@ -665,4 +665,12 @@ function closeLiftDoors(liftId) {
     rightDoor.style.transition = 'transform 0.5s'; 
     leftDoor.style.transform = 'translateX(0)'; 
     rightDoor.style.transform = 'translateX(0)'; 
+}
+function logAlgorithmEvent(liftId, event) {
+    const liftNumber = liftId.split('-')[1]; 
+    document.getElementById("form_simulation_number").value = SimulationID;
+    document.getElementById("form_terrain").value = terrain;
+    document.getElementById("form_lift_id").value = liftNumber; 
+    document.getElementById("form_event_type").value = event; 
+    document.getElementById("algorithm-event-form").submit();
 }

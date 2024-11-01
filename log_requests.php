@@ -1,7 +1,6 @@
 <?php
 header('Content-Type: application/json');
 
-// Get the raw POST data
 $inputJSON = file_get_contents('php://input');
 $data = json_decode($inputJSON, true);
 
@@ -23,7 +22,6 @@ $username = "root";
 $password = "";
 $database = "ElevatorDB";
 
-// Connect to the database
 $conn = mysqli_connect($servername, $username, $password, $database);
 
 if (!$conn) {
