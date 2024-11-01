@@ -682,9 +682,6 @@ function logAlgorithmEvent(liftId, event) {
     document.getElementById("form_lift_id").value = liftNumber; 
     document.getElementById("form_event_type").value = event; 
     document.getElementById("algorithm-event-form").submit();
-    if (algocompleted === 4) {
-        displayBestAlgorithm();
-    }
 }
 function submitBuildingForm() {
     document.getElementById('num_floors').value = floors_num;
