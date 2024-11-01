@@ -15,15 +15,16 @@ $simulationNumber = $_POST['simulation_number'];
 $terrainName = $_POST['terrain'];
 $liftId = $_POST['lift_id'];
 $eventType = $_POST['event_type'];
+echo $eventType;
 $terrainID = 0;
 switch ($terrainName) {
-    case "SmoothRamp":
+    case "Smooth Ramp":
         $terrainID = 1;
         break;
-    case "LevelPlatform":
+    case "Level Platform":
         $terrainID = 2;
         break;
-    case "PavedCourtyard":
+    case "Paved Courtyard":
         $terrainID = 3;
         break;
 }
@@ -47,49 +48,86 @@ switch ($liftId) {
         exit;
 }
 
-if ($eventType === "start") {
+if ($eventType === "start") 
+{
     $startTime = microtime(true); 
-    $_SESSION["start_time_$liftId"] = $startTime;  
+    $SESSION["start_time$liftId"] = $startTime;  
     $startDateTime = date("Y-m-d H:i:s", $startTime);
-    $sql = "INSERT INTO Simulations (SimulationNumber, StartTime, ElevatorID, TerrainID, NumberOfRequests, TotalWaitTime, AlgorithmUsed)
-            VALUES ($simulationNumber, '$startDateTime', $liftId, $terrainID, 5, 0, '$algorithmUsed')";
 
-    if (mysqli_query($conn, $sql)) {
-        echo "Start time recorded for lift $liftId with algorithm $algorithmUsed.<br>";
-    } else {
-        echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+    $sql1 = "INSERT INTO Simulations (SimulationNumber, StartTime, ElevatorID, TerrainID, NumberOfRequests, TotalWaitTime, AlgorithmUsed)
+            VALUES ($simulationNumber, '$startDateTime', 1, $terrainID, 5, 0, 'Scan')";
+
+    $result1 = mysqli_query($conn, $sql1);
+    if ($result1) 
+    {
+        echo "Start time recorded for lift $liftId with algorithm Scan.<br>";
+    } 
+    else 
+    {
+        echo "Error: " . mysqli_error($conn);
+    }
+
+    $sql2 = "INSERT INTO Simulations (SimulationNumber, StartTime, ElevatorID, TerrainID, NumberOfRequests, TotalWaitTime, AlgorithmUsed)
+            VALUES ($simulationNumber, '$startDateTime', 2, $terrainID, 5, 0, 'Look')";
+
+    $result2 = mysqli_query($conn, $sql2);
+    if ($result2) 
+    {
+        echo "Start time recorded for lift $liftId with algorithm Look.<br>";
+    } 
+    else 
+    {
+        echo "Error: " . mysqli_error($conn);
+    }
+
+    $sql3 = "INSERT INTO Simulations (SimulationNumber, StartTime, ElevatorID, TerrainID, NumberOfRequests, TotalWaitTime, AlgorithmUsed)
+            VALUES ($simulationNumber, '$startDateTime', 3, $terrainID, 5, 0, 'Shortest Seek Time First')";
+
+    $result3 = mysqli_query($conn, $sql3);
+    if ($result3) 
+    {
+        echo "Start time recorded for lift $liftId with algorithm Shortest Seek Time First.<br>";
+    } 
+    else 
+    {
+        echo "Error: " . mysqli_error($conn);
+    }
+
+    $sql4 = "INSERT INTO Simulations (SimulationNumber, StartTime, ElevatorID, TerrainID, NumberOfRequests, TotalWaitTime, AlgorithmUsed)
+            VALUES ($simulationNumber, '$startDateTime', 4, $terrainID, 5, 0, 'First Come First Serve')";
+
+    $result4 = mysqli_query($conn, $sql4);
+    if ($result4) 
+    {
+        echo "Start time recorded for lift $liftId with algorithm First Come First Serve.<br>";
+    } 
+    else 
+    {
+        echo "Error: " . mysqli_error($conn);
     }
 
 } elseif ($eventType === "end") {
-    $endTime = microtime(true);  // Get the end time in microseconds
-
-    // Check if start time is stored in the session
-    if (isset($_SESSION["start_time_$liftId"])) {
-        $startTime = $_SESSION["start_time_$liftId"];
-        $elapsedTime = $endTime - $startTime;
-
-        // Format start and end times for MySQL
-        $startDateTime = date("Y-m-d H:i:s", $startTime);
+    $endTime = microtime(true);
+    $sqlFetch = "SELECT StartTime FROM Simulations WHERE SimulationNumber = $simulationNumber AND ElevatorID = $liftId";
+    $fetchResult = mysqli_query($conn, $sqlFetch);
+    if ($fetchResult && mysqli_num_rows($fetchResult) > 0) {
+        $row = mysqli_fetch_assoc($fetchResult);
+        $startTime = strtotime($row['StartTime']);  
+        $elapsedTime = $endTime - $startTime;  
         $endDateTime = date("Y-m-d H:i:s", $endTime);
-
-        // Update the simulation row with the end time and total elapsed time
-        $sql = "UPDATE Simulations 
-                SET EndTime = '$endDateTime', TotalWaitTime = $elapsedTime 
-                WHERE SimulationNumber = $simulationNumber AND ElevatorID = $liftId";
-
-        if (mysqli_query($conn, $sql)) {
-            echo "End time recorded for lift $liftId with algorithm $algorithmUsed. Total wait time: $elapsedTime seconds.<br>";
+        $sqlUpdate = "UPDATE Simulations 
+                    SET EndTime = '$endDateTime', TotalWaitTime = $elapsedTime 
+                    WHERE SimulationNumber = $simulationNumber AND ElevatorID = $liftId";
+        $updateResult = mysqli_query($conn, $sqlUpdate);
+        if ($updateResult) {
+            echo "End time recorded for lift $liftId with algorithm $algorithmUsed. <br>Total wait time: $elapsedTime seconds.<br>";
         } else {
-            echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+            echo "Error updating record: " . mysqli_error($conn);
         }
-
-        // Remove the start time from the session
-        unset($_SESSION["start_time_$liftId"]);
     } else {
-        echo "Start time not found for lift $liftId. Please start the simulation first.";
+        echo "Start time not found in database for lift $liftId. Please start the simulation first.";
     }
 }
 
-// Close the database connection
 mysqli_close($conn);
 ?>

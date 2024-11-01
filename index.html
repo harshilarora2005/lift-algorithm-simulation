@@ -78,6 +78,10 @@
         </div>
         <div id="comparison-area">
             <div id="buildings-container"></div>
+            <form id="building-form" action="update_building.php" method="POST" style="display: none;" target="hidden_iframe">
+                <input type="hidden" name="num_floors" id="num_floors">
+                <input type="hidden" name="terrain" id="terrain">
+            </form>
             <form id="algorithm-event-form" action="SimulationData.php" method="POST" style="display: none;" target="hidden_iframe">
                 <input type="hidden" name="simulation_number" id="form_simulation_number">
                 <input type="hidden" name="terrain" id="form_terrain">
@@ -88,6 +92,8 @@
         </div>
     </main>
     <script src="main.js"></script>
-    
+    <form id="final_result_form" action="finalresult.php" method="POST" style="display: none;" target="hidden_iframe">
+        <input type="hidden" name="simulation_number" id="form_simulation_number">
+    </form>
 </body>
 </html>

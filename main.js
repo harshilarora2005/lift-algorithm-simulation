@@ -5,6 +5,7 @@ const liftDirection = new Map();
 const liftlocation=new Map();
 const liftQueue = [];
 const liftQueues=new Map();
+let algocompleted = 0;
 let liftscount,floorscount;
 let algorithm="Scan";
 let terrain="Smooth Ramp"
@@ -316,7 +317,7 @@ function moveLift1(liftId, destinations) {
         processPull();
     });
 }
-let floorsPerBuilding;
+let floors_num;
 function startComparison() {
     liftlocation.clear();
     document.getElementById('landing').style.display = 'none';
@@ -329,9 +330,9 @@ function beginComparison() {
     liftlocation.clear();
     document.getElementById('start-button-section').style.display = 'none';
     document.getElementById('input-count').style.display = 'flex';
-    floorsPerBuilding =  Math.floor(Math.random() * (25 - 10 + 1)) + 10; 
+    floors_num =  Math.floor(Math.random() * (25 - 10 + 1)) + 10; 
     const input_container = document.querySelector("#floors-count");
-    input_container.textContent=`Floors count - ${floorsPerBuilding}`;
+    input_container.textContent=`Floors count - ${floors_num}`;
     const buildingsContainer = document.getElementById("buildings-container");
     buildingsContainer.innerHTML = "";
     for (let i = 1; i <= 4; i++) {
@@ -371,7 +372,7 @@ function beginComparison() {
         }
         algo_name.appendChild(icon);
         buildingWrapper.appendChild(algo_name);
-        for (let j = floorsPerBuilding; j > 0; j--) {
+        for (let j = floors_num; j > 0; j--) {
             const floor = document.createElement("div");
             floor.classList.add("floors");
             floor.innerHTML = `
@@ -404,7 +405,8 @@ function beginComparison() {
         buildingsContainer.appendChild(buildingWrapper);
         
     }
-    generateRandomLiftRequest(floorsPerBuilding);
+    submitBuildingForm();
+    generateRandomLiftRequest(floors_num);
     Promise.all([
         processLiftRequests('lifts-1'),
         processLiftRequests('lifts-2'),
@@ -520,7 +522,7 @@ function scanAlgorithm(liftId) {
     }
     path = [...new Set(path)];
     path.sort((a, b) => a - b);
-    path.push(floorsPerBuilding);
+    path.push(floors_num);
     destinations.reverse();
     path.push()
     for (const destination of destinations) {
@@ -597,6 +599,7 @@ function sstfAlgorithm(liftId){
 function moveLift(liftId, destinations) {
     const lift = document.getElementById(liftId);
     let currindex = 0; 
+    let startTime=performance.now();
     logAlgorithmEvent(liftId, "start");
     function processPull() {
         if (currindex < destinations.length) {
@@ -626,6 +629,7 @@ function moveLift(liftId, destinations) {
             const newPosition = returnFloor * 110; 
             lift.style.transition = `transform ${travelTime / 1000}s`; 
             lift.style.transform = `translateY(-${newPosition}px)`; 
+            algocompleted++;
             setTimeout(() => {
                 liftlocation.set(liftId, returnFloor); 
                 console.log(`${liftId} has returned to floor 0.`);
@@ -635,12 +639,13 @@ function moveLift(liftId, destinations) {
                 console.log(`Time taken by ${liftId}: ${timeTaken} seconds`);
                 const liftNumber = liftId.split('-')[1]; 
                 const name = document.getElementById(`algo-name-${liftNumber}`);
+                console.log("added");
                 if (name) {
                     name.classList.add('completed');
                 }
                 liftavailable.set(liftId, true);
-                logAlgorithmEvent(liftId, "end");
-            }, 2000); 
+            }, 2000);
+            logAlgorithmEvent(liftId, "end");
         }
     }
     processPull(); 
@@ -668,9 +673,25 @@ function closeLiftDoors(liftId) {
 }
 function logAlgorithmEvent(liftId, event) {
     const liftNumber = liftId.split('-')[1]; 
+    console.log(terrain);
+    if(event=="end"){
+        console.log(`${liftId}-${event}`);
+    }
     document.getElementById("form_simulation_number").value = SimulationID;
     document.getElementById("form_terrain").value = terrain;
     document.getElementById("form_lift_id").value = liftNumber; 
     document.getElementById("form_event_type").value = event; 
     document.getElementById("algorithm-event-form").submit();
+    if (algocompleted === 4) {
+        displayBestAlgorithm();
+    }
+}
+function submitBuildingForm() {
+    document.getElementById('num_floors').value = floors_num;
+    document.getElementById('terrain').value = terrain; 
+    document.getElementById('building-form').submit(); 
+}
+function displayBestAlgorithm(){
+    document.getElementById("form_simulation_number").value=SimulationID;
+    document.getElementById("final_result_form").submit();
 }
