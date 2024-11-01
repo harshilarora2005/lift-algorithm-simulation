@@ -22,10 +22,12 @@
                 <input type="button" onclick="toggle(4)" value="First Come First Serve">
             </section>
             <section id="terrain-option">
-                <input type="button" class="selectedbtn" onclick="toggle1(1)" value="Scan">
-                <input type="button" onclick="toggle1(2)" value="Look">
-                <input type="button" onclick="toggle1(3)" value="Shortest Seek Time First">
-                <input type="button" onclick="toggle1(4)" value="First Come First Serve">
+                <input type="button" class="selectedbtn" onclick="toggle1(1)" value="Smooth Ramp">
+                <input type="button" onclick="toggle1(2)" value="Level Platform">
+                <input type="button" onclick="toggle1(3)" value="Paved Courtyard">
+            </section>
+            <section id="start-button-section" style="display: none;">
+                <button id="start-button" onclick="beginComparison()">Start</button>
             </section>
             <section id="input-count">
                 <h2 id="floors-count"></h2>
@@ -56,7 +58,7 @@
                         </h3>
                         <h3>
                             <span class="emphasis">NOTE:</span>
-                            <span>Elevators can be varied from 1-10</span>
+                            <span>Elevators can be varied from 1-5</span>
                         </h3>
                     </div>
                 </div>

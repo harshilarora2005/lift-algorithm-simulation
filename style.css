@@ -286,16 +286,39 @@ i{
     text-align: center;
 }
 #comparison-area{
+    display: none;
     background-color:var(--quarternary-color);
 }
 #compare-btn:hover {
     background-color: #45a049;
+}
+#start-button {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+    background-color: #1abc9c; 
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+#start-button:hover{
+    background-color: #45a049;
+}
+#start-button-section {
+    display: none;
 }
 #buildings-container {
     display: flex;
     justify-content: space-around;
     padding: 20px;
     margin-top: 20px;
+}
+.building-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
 }
 .building {
     width: 300px;
@@ -308,8 +331,45 @@ i{
     border-radius: 5px;
     position: relative; 
 }
+.algo-name {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    padding: 15px;
+    margin-top: 10px;
+    text-align: center;
+    width: 100%;
+    border-top: 2px solid #555;
+    border-radius: 0 0 5px 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
 
-/* Style for Floors */
+.algo-name:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+}
+.algo-scan {
+    background: linear-gradient(45deg, #1abc9c, #16a085);
+}
+
+.algo-look {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+}
+
+.algo-sstf {
+    background: linear-gradient(45deg, #9b59b6, #8e44ad);
+}
+
+.algo-fcfs {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+}
+
+.algo-name.completed {
+    color: gray;
+    text-decoration: line-through;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
 .floors {
     height: 110px;
     display: flex;
@@ -347,8 +407,7 @@ i{
 }
 
 #input-count {
-    visibility: hidden;
-    display: flex;
+    display: none;
     gap: 20px;
     justify-content: center;
     align-items: center;
@@ -382,7 +441,7 @@ i{
     margin-top: auto;
     margin-bottom: auto;
 }
-#terrain-option input:nth-of-type(2),#terrain-option input:nth-of-type(3){
+#terrain-option input:nth-of-type(2){
     border-left: none;
     border-right: none;
 }

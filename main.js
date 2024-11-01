@@ -7,7 +7,8 @@ const liftQueue = [];
 const liftQueues=new Map();
 let liftscount,floorscount;
 let algorithm="Scan";
-
+let terrain="Smooth Ramp"
+const SimulationID = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
 function toggle(x){
     location.reload();
     liftQueues.clear();
@@ -26,8 +27,8 @@ function initialize(){
 }
 function toggle1(x){
     const element=document.querySelector(`#terrain-option input:nth-of-type(${x})`);
-    algorithm=element.value;
-    for(let i=1;i<=4;i++){
+    terrain=element.value;
+    for(let i=1;i<=3;i++){
         document.querySelector(`#terrain-option input:nth-of-type(${i})`).classList.remove("selectedbtn");
     }
     element.classList.add("selectedbtn");
@@ -35,7 +36,7 @@ function toggle1(x){
 function startSimulation(event){
     event.preventDefault();
     document.getElementById("option").style.visibility="visible";
-    document.getElementById("input-count").style.visibility="visible";
+    document.getElementById("input-count").style.display="flex";
     const floors=parseInt(document.getElementById("floors-input").value);
     const elevators=parseInt(document.getElementById("elevator-input").value);
     if(floors <= 0 || floors> 100 || elevators <= 0 || elevators > 10) {
@@ -46,9 +47,9 @@ function startSimulation(event){
     liftscount=elevators;
     const landing = document.querySelector("#landing");
     landing.style.display = "none";
-    const floorsCountContainer = document.querySelector("#floors-count");
+    const input_container = document.querySelector("#floors-count");
     const liftsCountContainer = document.querySelector("#lifts-count");
-    floorsCountContainer.textContent = `Floors count - ${floors}`;
+    input_container.textContent = `Floors count - ${floors}`;
     liftsCountContainer.textContent = `Lifts count - ${elevators}`;
     addfloors(floors);
     addlifts(elevators);
@@ -318,20 +319,58 @@ function moveLift1(liftId, destinations) {
 let floorsPerBuilding;
 function startComparison() {
     liftlocation.clear();
-    document.getElementById("input-count").style.visibility="visible";
     document.getElementById('landing').style.display = 'none';
     document.getElementById('comparison-area').style.display = 'block';
-    document.getElementById('terrain-option').style.visibility="visible";
+    document.getElementById('terrain-option').style.visibility = "visible";
     document.getElementById('option').style.display = 'none';
+    document.getElementById('start-button-section').style.display = 'block';
+}
+function beginComparison() {
+    liftlocation.clear();
+    document.getElementById('start-button-section').style.display = 'none';
+    document.getElementById('input-count').style.display = 'flex';
     floorsPerBuilding =  Math.floor(Math.random() * (25 - 10 + 1)) + 10; 
-    const floorsCountContainer = document.querySelector("#floors-count");
-    floorsCountContainer.textContent=`Floors count - ${floorsPerBuilding}`;
+    const input_container = document.querySelector("#floors-count");
+    input_container.textContent=`Floors count - ${floorsPerBuilding}`;
     const buildingsContainer = document.getElementById("buildings-container");
     buildingsContainer.innerHTML = "";
     for (let i = 1; i <= 4; i++) {
+        const buildingWrapper = document.createElement("div");
+        buildingWrapper.classList.add("building-wrapper");
         const building = document.createElement("div");
         building.classList.add("building");
         building.id = `building-${i}`;
+        const algo_name = document.createElement("h2");
+        algo_name.classList.add("algo-name");
+        algo_name.id = `algo-name-${i}`; 
+        const icon = document.createElement('i');
+        switch (i) {
+            case 1:
+                algo_name.textContent = "Scan Algorithm";
+                icon.classList.add('fa-solid', 'fa-barcode');
+                algo_name.classList.add("algo-scan");
+                break;
+            case 2:
+                algo_name.textContent = "Look Algorithm";
+                algo_name.classList.add("algo-look");
+                icon.classList.add('fa-solid', 'fa-eye'); 
+                break;
+            case 3:
+                algo_name.textContent = "Shortest Seek Time First Algorithm";
+                algo_name.classList.add("algo-sstf");
+                icon.classList.add('fa-solid', 'fa-stopwatch');
+                break;
+            case 4:
+                algo_name.textContent = "First Come First Serve Algorithm";
+                algo_name.classList.add("algo-fcfs");
+                icon.classList.add('fa-solid', 'fa-users');
+                break;
+            default:
+                algo_name.textContent = "Unknown Algorithm";
+                break;
+        }
+        algo_name.appendChild(icon);
+        buildingWrapper.appendChild(algo_name);
         for (let j = floorsPerBuilding; j > 0; j--) {
             const floor = document.createElement("div");
             floor.classList.add("floors");
@@ -361,7 +400,9 @@ function startComparison() {
         `;
 
         building.appendChild(lift);
-        buildingsContainer.appendChild(building);
+        buildingWrapper.appendChild(building);
+        buildingsContainer.appendChild(buildingWrapper);
+        
     }
     generateRandomLiftRequest(floorsPerBuilding);
     Promise.all([
@@ -391,7 +432,30 @@ function generateRandomLiftRequest(numfloors) {
             requestItem.textContent = `Request ${index + 1}: Origin - ${request.origin}, Destination - ${request.destination}`;
             requestContainer.appendChild(requestItem);
         });
+        sendRequests();
         resolve();
+    });
+
+}
+function sendRequests(){
+    fetch('log_requests.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            simulationID: SimulationID,
+            requests: liftQueue
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            console.log('Requests logged successfully.');
+        } else {
+            console.error('Failed to log requests:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
 }
 function processLiftRequests(liftId) {
@@ -533,7 +597,7 @@ function sstfAlgorithm(liftId){
 function moveLift(liftId, destinations) {
     const lift = document.getElementById(liftId);
     let currindex = 0; 
-    console.log(liftlocation);
+    let startTime = performance.now();
     function processPull() {
         if (currindex < destinations.length) {
             const destinationFloor = destinations[currindex];
@@ -555,14 +619,26 @@ function moveLift(liftId, destinations) {
                 setTimeout(processPull, 3000); 
             }, travelTime+2000); 
         } else {
+            const currentFloor = liftlocation.get(liftId);
             const returnFloor = 0;
+            const floorDifference = Math.abs(returnFloor - currentFloor);
+            const travelTime = floorDifference * 1000; 
             const newPosition = returnFloor * 110; 
-            lift.style.transition = 'transform 2s'; 
+            lift.style.transition = `transform ${travelTime / 1000}s`; 
             lift.style.transform = `translateY(-${newPosition}px)`; 
             setTimeout(() => {
                 liftlocation.set(liftId, returnFloor); 
                 console.log(`${liftId} has returned to floor 0.`);
                 closeLiftDoors(liftId); 
+                let endTime = performance.now(); 
+                let timeTaken = (endTime - startTime) / 1000; 
+                console.log(`Time taken by ${liftId}: ${timeTaken} seconds`);
+                // sendTimeToBackend(liftId, timeTaken);
+                const liftNumber = liftId.split('-')[1]; // Extract lift number
+                const name = document.getElementById(`algo-name-${liftNumber}`);
+                if (name) {
+                    name.classList.add('completed');
+                }
                 liftavailable.set(liftId, true);
             }, 2000); 
         }
@@ -577,7 +653,6 @@ function openLiftDoors(liftId) {
     rightDoor.style.transition = 'transform 2s'; 
     leftDoor.style.transform = 'translateX(-50%)'; 
     rightDoor.style.transform = 'translateX(50%)'; 
-    console.log(`Doors of ${liftId} are opening...`);
     setTimeout(() => {
         closeLiftDoors(liftId);
     }, 3000); 
@@ -590,5 +665,4 @@ function closeLiftDoors(liftId) {
     rightDoor.style.transition = 'transform 0.5s'; 
     leftDoor.style.transform = 'translateX(0)'; 
     rightDoor.style.transform = 'translateX(0)'; 
-    console.log(`Doors of ${liftId} are closing...`);
 }
