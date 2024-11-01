@@ -685,6 +685,5 @@ function logAlgorithmEvent(liftId, event) {
 }
 function submitBuildingForm() {
     document.getElementById('num_floors').value = floors_num;
-    document.getElementById('terrain').value = terrain; 
     document.getElementById('building-form').submit(); 
 }
