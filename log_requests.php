@@ -43,7 +43,8 @@ foreach ($elevators as $elevatorID) {
         $originFloor1 = mysqli_real_escape_string($conn, $originFloor);
         $destinationFloor1 = mysqli_real_escape_string($conn, $destinationFloor);
 
-        $sql = "INSERT INTO requests (simulationID, elevatorID, originFloor, destinationFloor) VALUES ('$simulationID1', '$elevatorID1', '$originFloor1', '$destinationFloor1')";
+        $sql = "INSERT INTO requests (simulationID, elevatorID, originFloor, destinationFloor) 
+        VALUES ('$simulationID1', '$elevatorID1', '$originFloor1', '$destinationFloor1')";
         if (!mysqli_query($conn, $sql)) {
             echo json_encode([
                 'status' => 'error',
@@ -54,8 +55,6 @@ foreach ($elevators as $elevatorID) {
         }
     }
 }
-
 mysqli_close($conn);
-
 echo json_encode(['status' => 'success', 'message' => 'Requests logged successfully']);
 ?>

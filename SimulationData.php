@@ -8,7 +8,8 @@ $password = "";
 $database = "elevatordb";
 $conn = mysqli_connect($servername, $username, $password, $database);
 
-if (!$conn) {
+if (!$conn) 
+{
     die("Connection failed: " . mysqli_connect_error());
 }
 $simulationNumber = $_POST['simulation_number'];
@@ -17,7 +18,8 @@ $liftId = $_POST['lift_id'];
 $eventType = $_POST['event_type'];
 echo $eventType;
 $terrainID = 0;
-switch ($terrainName) {
+switch ($terrainName) 
+{
     case "Smooth Ramp":
         $terrainID = 1;
         break;
@@ -30,7 +32,8 @@ switch ($terrainName) {
 }
 
 $algorithmUsed = '';
-switch ($liftId) {
+switch ($liftId) 
+{
     case '1':
         $algorithmUsed = "Scan";
         break;
@@ -106,11 +109,14 @@ if ($eventType === "start")
         echo "Error: " . mysqli_error($conn);
     }
 
-} elseif ($eventType === "end") {
+} 
+elseif ($eventType === "end") 
+{
     $endTime = microtime(true);
     $sqlFetch = "SELECT StartTime FROM Simulations WHERE SimulationNumber = $simulationNumber AND ElevatorID = $liftId";
     $fetchResult = mysqli_query($conn, $sqlFetch);
-    if ($fetchResult && mysqli_num_rows($fetchResult) > 0) {
+    if ($fetchResult && mysqli_num_rows($fetchResult) > 0) 
+    {
         $row = mysqli_fetch_assoc($fetchResult);
         $startTime = strtotime($row['StartTime']);  
         $elapsedTime = $endTime - $startTime;  
@@ -119,12 +125,15 @@ if ($eventType === "start")
                     SET EndTime = '$endDateTime', TotalWaitTime = $elapsedTime 
                     WHERE SimulationNumber = $simulationNumber AND ElevatorID = $liftId";
         $updateResult = mysqli_query($conn, $sqlUpdate);
-        if ($updateResult) {
+        if ($updateResult) 
+        {
             echo "End time recorded for lift $liftId with algorithm $algorithmUsed. <br>Total wait time: $elapsedTime seconds.<br>";
-        } else {
+        } 
+        else {
             echo "Error updating record: " . mysqli_error($conn);
         }
-    } else {
+    } 
+    else {
         echo "Start time not found in database for lift $liftId. Please start the simulation first.";
     }
 }

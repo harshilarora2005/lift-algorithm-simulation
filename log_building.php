@@ -26,7 +26,7 @@ if (array_key_exists($terrain, $locations)) {
     $location = "Unknown"; 
 }
 
-$sql = "INSERT INTO Buildings (BuildingName, NumFloors, Location) VALUES (?, ?, ?)";
+$sql = "UPDATE Buildings SET BuildingName=?, NumFloors=?, Location=? VALUES (?, ?, ?)";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("sis", $buildingName, $numFloors, $location);
 

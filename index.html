@@ -52,6 +52,7 @@
                             </div>
                         </form>
                         <button id="compare-btn" onclick="startComparison()">Compare</button>
+                        <button onclick="window.location.href='result.php'" id="result-button">View Results</button>
                         <h3>
                             <span class="emphasis">NOTE:</span>
                             <span>Floor can be varied from 10-100</span>
@@ -78,7 +79,7 @@
         </div>
         <div id="comparison-area">
             <div id="buildings-container"></div>
-            <form id="building-form" action="update_building.php" method="POST" style="display: none;" target="hidden_iframe">
+            <form id="building-form" action="log_building.php" method="POST" style="display: none;" target="hidden_iframe">
                 <input type="hidden" name="num_floors" id="num_floors">
                 <input type="hidden" name="terrain" id="terrain">
             </form>
