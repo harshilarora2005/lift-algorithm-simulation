@@ -84,7 +84,6 @@
                 <th>Optimal Algorithm</th>
             </tr>
             <?php
-            // Database connection
             $servername = "localhost";
             $username = "root";
             $password = "";
@@ -103,8 +102,6 @@
                         <td>{$row['OptimalAlgorithm']}</td>
                         </tr>";
             }
-
-            // Close the database connection
             mysqli_close($conn);
             ?>
         </table>

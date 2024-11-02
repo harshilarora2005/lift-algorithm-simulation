@@ -48,7 +48,7 @@ foreach ($elevators as $elevatorID) {
         if (!mysqli_query($conn, $sql)) {
             echo json_encode([
                 'status' => 'error',
-                'message' => 'Data insertion failed: ' . mysqli_error($conn)
+                'message' => 'Data insertion failed: '
             ]);
             mysqli_close($conn);
             exit();
