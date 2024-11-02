@@ -48,10 +48,10 @@ function startSimulation(event){
     liftscount=elevators;
     const landing = document.querySelector("#landing");
     landing.style.display = "none";
-    const input_container = document.querySelector("#floors-count");
-    const liftsCountContainer = document.querySelector("#lifts-count");
-    input_container.textContent = `Floors count - ${floors}`;
-    liftsCountContainer.textContent = `Lifts count - ${elevators}`;
+    const inputContainer = document.querySelector("#floors-count");
+    const liftCount = document.querySelector("#lifts-count");
+    inputContainer.textContent = `Floors count - ${floors}`;
+    liftCount.textContent = `Lifts count - ${elevators}`;
     addfloors(floors);
     addlifts(elevators);
     
@@ -165,7 +165,7 @@ function addLiftRequest(origin, destination) {
     if (assignedLiftId) {
         liftQueues.get(assignedLiftId).push(request); 
         liftavailable.set(assignedLiftId, false);
-        let path=[];
+        let path = [];
         switch(algorithm){
             case 'Scan':
                 path = scan(assignedLiftId);
@@ -216,7 +216,15 @@ function scan(liftId) {
             destinations = destinations.filter(item => item !== destinations[i]); 
         }
     }
-    path = [...new Set(path)];
+    let uniquePath = [];
+    let pathSet = new Set();
+    for (let item of path) {
+        if (!pathSet.has(item)) {
+            pathSet.add(item); 
+            uniquePath.push(item); 
+        }
+    }
+    path = uniquePath;
     path.sort((a, b) => a - b);
     path.push(floorscount);
     destinations.reverse().forEach(destination => path.push(destination));
@@ -250,7 +258,15 @@ function look(liftId) {
             destinations = destinations.filter(item => item !== destinations[i]); 
         }
     }
-    path = [...new Set(path)];
+    let uniquePath = [];
+    let pathSet = new Set();
+    for (let item of path) {
+        if (!pathSet.has(item)) {
+            pathSet.add(item); 
+            uniquePath.push(item); 
+        }
+    }
+    path = uniquePath;
     path.sort((a, b) => a - b);
     destinations.reverse().forEach(destination => path.push(destination));
     console.log("Scan path:", path);
@@ -274,7 +290,19 @@ function sstf(origin,destination){
     return path;
 }
 function fcft(origin,destination){
-    
+    const path = [];
+    console.log(liftlocation);
+    let currentFloor = liftlocation.get(liftId) || 0;
+    liftQueue.forEach(request => {
+        path.push(request.origin); 
+        currentFloor = request.origin;
+        if (request.destination !== currentFloor) {
+            path.push(request.destination); 
+            currentFloor = request.destination;
+        }
+    });
+    console.log("FCFS path:", path);
+    return path;
 }
 function moveLift1(liftId, destinations) {
     return new Promise((resolve) => {
@@ -317,7 +345,7 @@ function moveLift1(liftId, destinations) {
         processPull();
     });
 }
-let floors_num;
+let floorsNum;
 function startComparison() {
     liftlocation.clear();
     document.getElementById('landing').style.display = 'none';
@@ -330,9 +358,9 @@ function beginComparison() {
     liftlocation.clear();
     document.getElementById('start-button-section').style.display = 'none';
     document.getElementById('input-count').style.display = 'flex';
-    floors_num =  Math.floor(Math.random() * (25 - 10 + 1)) + 10; 
-    const input_container = document.querySelector("#floors-count");
-    input_container.textContent=`Floors count - ${floors_num}`;
+    floorsNum =  Math.floor(Math.random() * (25 - 10 + 1)) + 10; 
+    const inputContainer = document.querySelector("#floors-count");
+    inputContainer.textContent=`Floors count - ${floorsNum}`;
     const buildingsContainer = document.getElementById("buildings-container");
     buildingsContainer.innerHTML = "";
     for (let i = 1; i <= 4; i++) {
@@ -372,7 +400,7 @@ function beginComparison() {
         }
         algo_name.appendChild(icon);
         buildingWrapper.appendChild(algo_name);
-        for (let j = floors_num; j > 0; j--) {
+        for (let j = floorsNum; j > 0; j--) {
             const floor = document.createElement("div");
             floor.classList.add("floors");
             floor.innerHTML = `
@@ -406,7 +434,7 @@ function beginComparison() {
         
     }
     submitBuildingForm();
-    generateRandomLiftRequest(floors_num);
+    generateRandomLiftRequest(floorsNum);
     Promise.all([
         processLiftRequests('lifts-1'),
         processLiftRequests('lifts-2'),
@@ -520,9 +548,17 @@ function scanAlgorithm(liftId) {
             destinations = destinations.filter(item => item !== destinations[i])
         }
     }
-    path = [...new Set(path)];
+    let uniquePath = [];
+    let pathSet = new Set();
+    for (let item of path) {
+        if (!pathSet.has(item)) {
+            pathSet.add(item); 
+            uniquePath.push(item); 
+        }
+    }
+    path = uniquePath;
     path.sort((a, b) => a - b);
-    path.push(floors_num);
+    path.push(floorsNum);
     destinations.reverse();
     path.push()
     for (const destination of destinations) {
@@ -555,7 +591,15 @@ function lookAlgorithm(liftId) {
             destinations = destinations.filter(item => item !== destinations[i])
         }
     }
-    path = [...new Set(path)];
+    let uniquePath = [];
+    let pathSet = new Set();
+    for (let item of path) {
+        if (!pathSet.has(item)) {
+            pathSet.add(item); 
+            uniquePath.push(item); 
+        }
+    }
+    path = uniquePath;
     path.sort((a, b) => a - b);
     destinations.reverse();
     path.push()
@@ -594,8 +638,8 @@ function sstfAlgorithm(liftId){
     }
     console.log("SSTF path:",path);
     return path;
-
 }
+
 function moveLift(liftId, destinations) {
     const lift = document.getElementById(liftId);
     let currindex = 0; 
@@ -684,6 +728,6 @@ function logAlgorithmEvent(liftId, event) {
     document.getElementById("algorithm-event-form").submit();
 }
 function submitBuildingForm() {
-    document.getElementById('num_floors').value = floors_num;
+    document.getElementById('num_floors').value = floorsNum;
     document.getElementById('building-form').submit(); 
 }

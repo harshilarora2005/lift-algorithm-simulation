@@ -112,6 +112,7 @@ header{
     border:1px solid rgba(255, 255, 255, 0.18);
     box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.1);
     padding: 70px;
+    margin-top: 70px;
 }
 #input-boxes{
     display: flex;
@@ -159,11 +160,6 @@ header{
 
 #submit:hover{
     transform: translateY(-3px);
-    animation: gradientMove 2s alternate infinite;
-}
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
 }
 .emphasis{
     color:var(--important-color);
@@ -276,7 +272,6 @@ i{
     margin-bottom: 1.2rem;
     padding: 12px;
     font-size: 16px;
-    font-family: 'Josefin Sans', sans-serif;
     color: white;
     background-color: #4CAF50;
     border: none;
