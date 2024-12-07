@@ -27,5 +27,5 @@ The Lift Algorithm Comparison project is a web-based application designed to vis
 ### Installation  
 1. Clone the repository:  
    ```bash
-   git clone https://github.com/yourusername/lift-algorithm-comparison.git
+   git clone https://github.com/harshilarora2005/lift-algorithm-simulation.git
    cd lift-algorithm-comparison
