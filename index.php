@@ -15,18 +15,15 @@
     <header>
         <h1>Welcome to Lift Simulation</h1>
         <div id="header-info">
-            <section id="option">
-                <input type="button" class="selectedbtn" onclick="toggle(1)" value="Scan">
-                <input type="button" onclick="toggle(2)" value="Look">
-                <input type="button" onclick="toggle(3)" value="Shortest Seek Time First">
-                <input type="button" onclick="toggle(4)" value="First Come First Serve">
+            <section id="simulation-id-display">
             </section>
             <section id="terrain-option">
-                <input type="button" class="selectedbtn" onclick="toggle1(1)" value="Smooth Ramp">
-                <input type="button" onclick="toggle1(2)" value="Level Platform">
-                <input type="button" onclick="toggle1(3)" value="Paved Courtyard">
+                <input type="button" class="selectedbtn" onclick="toggle1(1)" value="Level Ground">
+                <input type="button" onclick="toggle1(2)" value="Gentle Slope">
+                <input type="button" onclick="toggle1(3)" value="Hilly Path">
+                <input type="button" onclick="toggle1(4)" value="Mountainous Slope">
             </section>
-            <section id="start-button-section" style="display: none;">
+            <section id="start-button-section">
                 <button id="start-button" onclick="beginComparison()">Start</button>
             </section>
             <section id="input-count">
@@ -42,46 +39,45 @@
                 <div id="glass">
                     <div id="inner-input-box">
                         <h2>Enter input parameters:-</h2>
-                        <form id="user-input" onsubmit="startSimulation(event)">
+                        <form id="user-input" onsubmit="startComparison(event)" method="POST" action="">
                             <div id="input-boxes">
                                 <div>
                                     <input type="number" min="10" max="100" name="floors-input" id="floors-input" placeholder="Floors:" required>
-                                    <input type="number" min="1" max="5" name="elevator-input" id="elevator-input" placeholder="Elevators:" required>
                                 </div>
-                                <button id="submit" type="submit" >Start Simulation</button>
                             </div>
+                            <input type="submit" id="compare-btn" name="compare-btn" value="Compare">
                         </form>
-                        <button id="compare-btn" onclick="startComparison()">Compare</button>
+                        <?php
+                            if($_SERVER["REQUEST_METHOD"]=="POST"){
+                                $servername="localhost";
+                                $username="root";
+                                $password="";
+                                $database = "ElevatorDB";
+                                $conn = new mysqli($servername, $username, $password, $database);
+                                if ($conn->connect_error) {
+                                    die("Connection failed: " . $conn->connect_error);
+                                }
+                                $numFloors = $_POST['floors-input'];
+                                $sql = "UPDATE Buildings SET NumFloors = $numFloors";
+                                if ($conn->query($sql) === TRUE) {
+                                    echo "All buildings updated successfully with NumFloors set to " . $numFloors . ".";
+                                } else {
+                                    echo "Error updating buildings: " . $conn->error;
+                                }
+                                $conn->close();
+                            }
+                        ?>
                         <button onclick="window.location.href='result.php'" id="result-button">View Results</button>
                         <h3>
                             <span class="emphasis">NOTE:</span>
                             <span>Floor can be varied from 10-100</span>
                         </h3>
-                        <h3>
-                            <span class="emphasis">NOTE:</span>
-                            <span>Elevators can be varied from 1-5</span>
-                        </h3>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="simulation-area">
-            <div id="destination-modal" class="modal">
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <h2>Select Your Destination Floor</h2>
-                    <select id="floor-select"></select>
-                    <button id="submit-destination">Confirm</button>
-                </div>
-            </div>
-            <section id="floors-container">
-            </section>
-        </div>
         <div id="comparison-area">
             <div id="buildings-container"></div>
-            <form id="building-form" action="log_building.php" method="POST" style="display: none;" target="hidden_iframe">
-                <input type="hidden" name="num_floors" id="num_floors">
-            </form>
             <form id="algorithm-event-form" action="SimulationData.php" method="POST" style="display: none;" target="hidden_iframe">
                 <input type="hidden" name="simulation_number" id="form_simulation_number">
                 <input type="hidden" name="terrain" id="form_terrain">

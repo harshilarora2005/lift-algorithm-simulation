@@ -1,5 +1,5 @@
 const floorheight=110;
-const floormap=new Map();
+// const floormap=new Map();
 const liftavailable=new Map();
 const liftDirection = new Map();
 const liftlocation=new Map();
@@ -8,19 +8,8 @@ const liftQueues=new Map();
 let algocompleted = 0;
 let liftscount,floorscount;
 let algorithm="Scan";
-let terrain="Smooth Ramp"
+let terrain="Level Ground"
 const SimulationID = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
-function toggle(x){
-    location.reload();
-    liftQueues.clear();
-    initialize();
-    const element=document.querySelector(`#option input:nth-of-type(${x})`);
-    algorithm=element.value;
-    for(let i=1;i<=4;i++){
-        document.querySelector(`#option input:nth-of-type(${i})`).classList.remove("selectedbtn");
-    }
-    element.classList.add("selectedbtn");
-}
 function initialize(){
     for (let i = 1; i <= liftscount; i++) {
         liftQueues.set(`lift-${i}`, []);
@@ -29,336 +18,30 @@ function initialize(){
 function toggle1(x){
     const element=document.querySelector(`#terrain-option input:nth-of-type(${x})`);
     terrain=element.value;
-    for(let i=1;i<=3;i++){
+    for(let i=1;i<=4;i++){
         document.querySelector(`#terrain-option input:nth-of-type(${i})`).classList.remove("selectedbtn");
     }
     element.classList.add("selectedbtn");
 }
-function startSimulation(event){
-    event.preventDefault();
-    document.getElementById("option").style.visibility="visible";
-    document.getElementById("input-count").style.display="flex";
-    const floors=parseInt(document.getElementById("floors-input").value);
-    const elevators=parseInt(document.getElementById("elevator-input").value);
-    if(floors <= 0 || floors> 100 || elevators <= 0 || elevators > 10) {
-        alert("Invalid input! Try again.");
-        return;
-    }
-    floorscount=floors;
-    liftscount=elevators;
-    const landing = document.querySelector("#landing");
-    landing.style.display = "none";
-    const inputContainer = document.querySelector("#floors-count");
-    const liftCount = document.querySelector("#lifts-count");
-    inputContainer.textContent = `Floors count - ${floors}`;
-    liftCount.textContent = `Lifts count - ${elevators}`;
-    addfloors(floors);
-    addlifts(elevators);
-    
-}
-
-function addfloors(totalFloors){
-    const floorscontainer=document.querySelector('#floors-container');
-    floorscontainer.style.visibility="visible";
-    for(let i=totalFloors;i>0;i--){
-        const currfloor=document.createElement("div");
-        currfloor.className="floor";
-        const floorId=`floor-${i}`;
-        currfloor.id=floorId;
-        currfloor.innerHTML=
-        `
-            <div class="floor-details">
-                <button class="lift-button up"><i class="fa-solid fa-arrow-up"></i>UP</button>
-                <p class="floor-number">Floor-${i}</p>
-                <button class="lift-button down"><i class="fa-solid fa-arrow-down"></i>DOWN</button>
-            </div>
-        `;
-        currfloor.querySelector(".up").addEventListener("click", (event) => liftcall(event,"up"));
-        currfloor.querySelector(".down").addEventListener("click",(event)=> liftcall(event,"down"));
-        floorscontainer.appendChild(currfloor);
-        floormap.set(floorId,null);
-    }
-    const groundFloor = document.createElement("div");
-    groundFloor.className = "floor";
-    groundFloor.id = `floor-0`;
-    groundFloor.innerHTML = 
-    `
-            <div class="floor-details">
-                <button class="lift-button up" ><i class="fa-solid fa-arrow-up"></i>UP</button>
-                <p class="floor-number">Floor-0</p> 
-            </div>
-    `;
-    groundFloor.querySelector(".up").addEventListener("click", (event) => liftcall(event,"up"));
-    floorscontainer.appendChild(groundFloor);
-    floormap.set("floor-0",null);
-    floorscontainer.style.visibility = "visible";
-    floorscontainer.style.border = `2px solid var(--primary-color)`;
-}
-
-function addlifts(totalLifts){
-    const groundFloor=document.querySelector('#floor-0');
-    for(let i=1;i<=totalLifts;i++){
-        const currlift=document.createElement('div');
-        currlift.className="lift";
-        currlift.id=`lift-${i}`;
-        currlift.innerHTML=
-        `
-            <div class='door left-doors'></div>
-            <div class='door right-doors'></div>
-        `;
-        liftavailable.set(`lift-${i}`,true);
-        liftlocation.set(`lift-${i}`,0);
-        liftQueues.set(`lift-${i}`, []);
-        groundFloor.appendChild(currlift);
-    }   
-}
-function liftcall(event,direction) {
-    const currentFloor = parseInt(event.target.closest('.floor').id.split('-')[1]);
-    destinationPanel(currentFloor,direction);
-}
-
-function destinationPanel(currentFloor, direction) {
-    const modal = document.getElementById("destination-modal");
-    const floorSelect = document.getElementById("floor-select");
-    floorSelect.innerHTML = ""; 
-    if (direction === 'up') {
-        for (let i = currentFloor + 1; i <= floorscount; i++) {
-            const option = document.createElement("option");
-            option.value = i;
-            option.textContent = `Floor ${i}`;
-            floorSelect.appendChild(option);
-        }
-    } else if (direction === 'down') {
-        for (let i = currentFloor - 1; i >= 0; i--) {
-            const option = document.createElement("option");
-            option.value = i;
-            option.textContent = `Floor ${i}`;
-            floorSelect.appendChild(option);
-        }
-    }
-
-    modal.dataset.callFloor = currentFloor;
-    modal.style.display = "block";
-}
-document.querySelector(".close").onclick = function() {
-    document.getElementById("destination-modal").style.display = "none";
-};
-document.getElementById("submit-destination").onclick = function() {
-    const callFloor = parseInt(document.getElementById("destination-modal").dataset.callFloor);
-    const destinationFloor = parseInt(document.getElementById("floor-select").value);
-    document.getElementById("destination-modal").style.display = "none";
-    addLiftRequest(callFloor,destinationFloor);
-};
-function addLiftRequest(origin, destination) {
-    const request = { origin, destination };
-    let assignedLiftId = null;
-    for (let i = 1; i <= liftscount; i++) {
-        const liftId = `lift-${i}`;
-        const liftLocation = liftlocation.get(liftId);
-        const isAvailable = liftavailable.get(liftId);
-        if (isAvailable && (assignedLiftId === null || Math.abs(liftLocation - origin) < Math.abs(liftlocation.get(assignedLiftId) - origin))) {
-            assignedLiftId = liftId;
-            break;
-        }
-    }
-
-    if (assignedLiftId) {
-        liftQueues.get(assignedLiftId).push(request); 
-        liftavailable.set(assignedLiftId, false);
-        let path = [];
-        switch(algorithm){
-            case 'Scan':
-                path = scan(assignedLiftId);
-                break;
-            case 'Look':
-                path = look(assignedLiftId);
-                break;
-            case 'Shortest Seek Time First':
-                path = sstf(assignedLiftId);
-                break;
-            case 'First Come First Serve':
-                path = fcfs(assignedLiftId);
-                break;
-        } 
-        if (path) {
-            moveLift1(assignedLiftId, path).then(() => { 
-                liftavailable.set(assignedLiftId, true); 
-            });
-        }
-    } else {
-        console.log("No available lift to handle the request at this moment.");
-    }
-}
-
-function scan(liftId) {
-    let path = [];
-    const Queue = liftQueues.get(liftId);
-    const currentFloor = liftlocation.get(liftId) || 0;
-    const requests = Queue.map(request => ({
-        origin: request.origin,
-        destination: request.destination
-    }));
-    for (let i = 0; i < requests.length; i++) {
-        for (let j = 0; j < requests.length - 1 - i; j++) {
-            if (requests[j].origin> requests[j + 1].origin) {
-                const temp = requests[j];
-                requests[j] = requests[j + 1];
-                requests[j + 1] = temp;
-            }
-        }
-    }
-    const origins = requests.map(request => request.origin);
-    let destinations = requests.map(request => request.destination);
-    for (let i = 0; i < origins.length; i++) {
-        path.push(origins[i]); 
-        if (destinations[i] > origins[i]) { 
-            path.push(destinations[i]);
-            destinations = destinations.filter(item => item !== destinations[i]); 
-        }
-    }
-    let uniquePath = [];
-    let pathSet = new Set();
-    for (let item of path) {
-        if (!pathSet.has(item)) {
-            pathSet.add(item); 
-            uniquePath.push(item); 
-        }
-    }
-    path = uniquePath;
-    path.sort((a, b) => a - b);
-    path.push(floorscount);
-    destinations.reverse().forEach(destination => path.push(destination));
-    console.log("Scan path:", path);
-    liftQueues.set(liftId, []);
-    return path;
-}
-function look(liftId) {
-    let path = [];
-    const Queue = liftQueues.get(liftId);
-    const currentFloor = liftlocation.get(liftId) || 0;
-    const requests = Queue.map(request => ({
-        origin: request.origin,
-        destination: request.destination
-    }));
-    for (let i = 0; i < requests.length; i++) {
-        for (let j = 0; j < requests.length - 1 - i; j++) {
-            if (requests[j].origin> requests[j + 1].origin) {
-                const temp = requests[j];
-                requests[j] = requests[j + 1];
-                requests[j + 1] = temp;
-            }
-        }
-    }
-    const origins = requests.map(request => request.origin);
-    let destinations = requests.map(request => request.destination);
-    for (let i = 0; i < origins.length; i++) {
-        path.push(origins[i]); 
-        if (destinations[i] > origins[i]) { 
-            path.push(destinations[i]);
-            destinations = destinations.filter(item => item !== destinations[i]); 
-        }
-    }
-    let uniquePath = [];
-    let pathSet = new Set();
-    for (let item of path) {
-        if (!pathSet.has(item)) {
-            pathSet.add(item); 
-            uniquePath.push(item); 
-        }
-    }
-    path = uniquePath;
-    path.sort((a, b) => a - b);
-    destinations.reverse().forEach(destination => path.push(destination));
-    console.log("Scan path:", path);
-    liftQueues.set(liftId, []);
-    return path;
-}
-function sstf(origin,destination){
-    const path = [];
-    let currentFloor = liftlocation.get(liftId) || 0;
-    const Queue = liftQueues.get(liftId).slice(); 
-    while (Queue.length > 0) {
-        Queue.sort((a, b) => Math.abs(a.origin - currentFloor) - Math.abs(b.origin - currentFloor));
-        const closestRequest = Queue.shift(); 
-        path.push(closestRequest.origin);
-        currentFloor = closestRequest.origin;
-        path.push(closestRequest.destination);
-        currentFloor = closestRequest.destination;
-    }
-    console.log(`SSTF path for ${liftId}:`, path);
-    liftQueues.set(liftId, []);
-    return path;
-}
-function fcft(origin,destination){
-    const path = [];
-    console.log(liftlocation);
-    let currentFloor = liftlocation.get(liftId) || 0;
-    liftQueue.forEach(request => {
-        path.push(request.origin); 
-        currentFloor = request.origin;
-        if (request.destination !== currentFloor) {
-            path.push(request.destination); 
-            currentFloor = request.destination;
-        }
-    });
-    console.log("FCFS path:", path);
-    return path;
-}
-function moveLift1(liftId, destinations) {
-    return new Promise((resolve) => {
-        const lift = document.getElementById(liftId);
-        let currindex = 0;
-        function processPull() {
-            if (currindex < destinations.length) {
-                const destinationFloor = destinations[currindex];
-                const currentFloor = liftlocation.get(liftId) || 0;
-                const floorDifference = Math.abs(destinationFloor - currentFloor);
-                const travelTime = floorDifference * 1000;
-
-                lift.style.transition = `transform ${travelTime / 1000}s`;
-                const newPosition = destinationFloor * 110;
-                lift.style.transform = `translateY(-${newPosition}px)`;
-
-                setTimeout(() => {
-                    liftlocation.set(liftId, destinationFloor);
-                    console.log(`${liftId} has arrived at floor ${destinationFloor}.`);
-                    openLiftDoors(liftId);
-
-                    currindex++;
-                    setTimeout(processPull, 3000); 
-                }, travelTime + 2000); 
-            } else {
-                const returnFloor = 0;
-                const newPosition = returnFloor * 110;
-                lift.style.transition = 'transform 2s';
-                lift.style.transform = `translateY(-${newPosition}px)`;
-
-                setTimeout(() => {
-                    liftlocation.set(liftId, returnFloor);
-                    console.log(`${liftId} has returned to floor 0.`);
-                    closeLiftDoors(liftId);
-                    resolve();
-                }, 2000);
-            }
-        }
-
-        processPull();
-    });
-}
 let floorsNum;
-function startComparison() {
+function startComparison(event) {
+    event.preventDefault();
     liftlocation.clear();
+    document.getElementById("header-info").style.display="flex";
+    floorsNum = parseInt(document.getElementById("floors-input").value);
     document.getElementById('landing').style.display = 'none';
     document.getElementById('comparison-area').style.display = 'block';
     document.getElementById('terrain-option').style.visibility = "visible";
-    document.getElementById('option').style.display = 'none';
     document.getElementById('start-button-section').style.display = 'block';
+    const simulationIdDisplay = document.getElementById("simulation-id-display");
+    simulationIdDisplay.style.display="flex";
+    simulationIdDisplay.innerHTML = `<h3>Simulation ID: ${SimulationID}</h3>`;
 }
 function beginComparison() {
     liftlocation.clear();
     document.getElementById('start-button-section').style.display = 'none';
     document.getElementById('input-count').style.display = 'flex';
-    floorsNum =  Math.floor(Math.random() * (25 - 10 + 1)) + 10; 
+    document.getElementById('terrain-option').style.visibility = "hidden";
     const inputContainer = document.querySelector("#floors-count");
     inputContainer.textContent=`Floors count - ${floorsNum}`;
     const buildingsContainer = document.getElementById("buildings-container");
@@ -433,7 +116,6 @@ function beginComparison() {
         buildingsContainer.appendChild(buildingWrapper);
         
     }
-    submitBuildingForm();
     generateRandomLiftRequest(floorsNum);
     Promise.all([
         processLiftRequests('lifts-1'),
@@ -476,16 +158,21 @@ function sendRequests(){
             requests: liftQueue
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
-        if (data.status === 'success') {
+        if (data && data.status === 'success') {
             console.log('Requests logged successfully.');
         } else {
-            console.error('Failed to log requests:', data.message);
+            console.error('Failed to log requests:', data ? data.message : 'No response data');
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Fetch error:', error.message || error);
     });
 }
 function processLiftRequests(liftId) {
@@ -652,10 +339,34 @@ function moveLift(liftId, destinations) {
             const floorDifference = Math.abs(destinationFloor - currentFloor);
             const travelTime = floorDifference * 1000; 
             const currentPosition = currentFloor * 110;
+            let inclineAngle;
+            switch (terrain) {
+                case "Level Ground":
+                    inclineAngle = 0;
+                    break;
+                case "Gentle Slope":
+                    inclineAngle = 10;
+                    break;
+                case "Hilly Path":
+                    inclineAngle = 15;
+                    break;
+                case "Mountainous Slope":
+                    inclineAngle = 25;
+                    break;
+            }
+            const inclineRadians = (inclineAngle * Math.PI) / 180;
+            const inclineFactor = 1 + Math.sin(inclineRadians);
+            let adjustedTravelTime = travelTime;
+            if (destinationFloor > currentFloor) {
+
+                adjustedTravelTime *= inclineFactor;
+            } else if (destinationFloor < currentFloor) {
+                adjustedTravelTime /= inclineFactor;
+            }
             lift.style.transition = 'none';
             lift.style.transform = `translateY(-${currentPosition}px)`;
             lift.offsetHeight;
-            lift.style.transition = `transform ${travelTime / 1000}s`; 
+            lift.style.transition = `transform ${adjustedTravelTime / 1000}s`; 
             const newPosition = destinationFloor * 110;
             lift.style.transform = `translateY(-${newPosition}px)`;
             setTimeout(() => {
@@ -726,8 +437,4 @@ function logAlgorithmEvent(liftId, event) {
     document.getElementById("form_lift_id").value = liftNumber; 
     document.getElementById("form_event_type").value = event; 
     document.getElementById("algorithm-event-form").submit();
-}
-function submitBuildingForm() {
-    document.getElementById('num_floors').value = floorsNum;
-    document.getElementById('building-form').submit(); 
 }

@@ -20,14 +20,17 @@ echo $eventType;
 $terrainID = 0;
 switch ($terrainName) 
 {
-    case "Smooth Ramp":
+    case "Level Ground":
         $terrainID = 1;
         break;
-    case "Level Platform":
+    case "Gentle Slope":
         $terrainID = 2;
         break;
-    case "Paved Courtyard":
+    case "Hilly Path":
         $terrainID = 3;
+        break;
+    case "Mountainous Slope":
+        $terrainID = 4;
         break;
 }
 
@@ -148,9 +151,35 @@ if ($row['recordCount'] == 4)
         WHERE SimulationNumber = $simulationNumber
         ORDER BY TotalWaitTime ASC
         LIMIT 1";
+    $result6 = mysqli_query($conn,$sql6);
+    $sql7 = "SELECT TerrainID FROM Simulations WHERE SimulationNumber = $simulationNumber LIMIT 1";
+    $result7 = mysqli_query($conn, $sql7);
+    $terrain = "";
 
-    $result6 = mysqli_query($conn, $sql6);
-
+    if ($result7 && mysqli_num_rows($result7) > 0) {
+        $row = mysqli_fetch_assoc($result7);
+        $terrainID = $row['TerrainID'];
+        
+        switch($terrainID) {
+            case 1:
+                $terrain = "Smooth Plane";
+                break;
+            case 2:
+                $terrain = "Gentle Slope";
+                break;
+            case 3:
+                $terrain = "Hilly Path";
+                break;
+            case 4:
+                $terrain = "Mountainous Slope";
+                break;
+            default:
+                $terrain = "Unknown Terrain";
+                break;
+        }
+    } else {
+        echo "Terrain not found for SimulationNumber $simulationNumber.";
+    }
     if ($result6 && mysqli_num_rows($result6) > 0) 
     {
         $row = mysqli_fetch_assoc($result6);
@@ -158,11 +187,11 @@ if ($row['recordCount'] == 4)
         $bestAlgorithm = $row['AlgorithmUsed'];
         $bestElapsedTime = $row['MinElapsedTime'];
         $efficiencyScore = (1 / $bestElapsedTime)*100;    
-        $sqlInsert = "INSERT INTO SimulationResults (SimulationID, EfficiencyScore, OptimalAlgorithm)
-                VALUES ($bestSimulationID, $efficiencyScore, '$bestAlgorithm')";
+        $sqlInsert = "INSERT INTO SimulationResults (SimulationID, EfficiencyScore, OptimalAlgorithm, Terrain)
+                VALUES ($bestSimulationID, $efficiencyScore, '$bestAlgorithm', '$terrain')";
 
-        $result7 = mysqli_query($conn, $sqlInsert);
-        if (!$result7) 
+        $result8 = mysqli_query($conn, $sqlInsert);
+        if (!$result8) 
         {
             echo "Error inserting into SimulationResults: " . mysqli_error($conn);
         } 
